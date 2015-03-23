@@ -27,5 +27,11 @@
   "homepage": "https://github.com/adviceinteractivegroup/sails-hook-swagger",
   "sails": {
     "isHook": true
+  },
+  "dependencies": {
+    "async": "^0.9.0",
+    "lodash": "^3.5.0",
+    "pluralize": "^1.1.2",
+    "sails-stringfile": "^0.3.2"
   }
 }
