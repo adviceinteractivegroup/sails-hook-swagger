@@ -21,9 +21,27 @@ module.exports = function swagger(sails) {
         sails.log.verbose('Swagger hook activated.');
       }
 
-//      let blueprintConfig = sails.config.blueprints;
+      var eventsToWaitFor = [];
+      eventsToWaitFor.push('router:after');
+      if (sails.hooks.policies) {
+        eventsToWaitFor.push('hook:policies:bound');
+      }
+      if (sails.hooks.orm) {
+        eventsToWaitFor.push('hook:orm:loaded');
+      }
+      if (sails.hooks.controllers) {
+        eventsToWaitFor.push('hook:controllers:loaded');
+      }
+      sails.after(eventsToWaitFor, hook.getRoutes);*
 
-      // todo calculate the routes here
+      cb();
+    },
+    routes: {
+
+    },
+    getRoutes: function getRoutes() {
+      // let blueprintConfig = sails.config.blueprints;
+
       // get the manual routes first
       var self = this;
 
@@ -49,7 +67,7 @@ module.exports = function swagger(sails) {
           var baseRoute = config.prefix + '/' + controllerId;
 
           // Determine base route for RESTful service
-          var baseRestRoute = nodepath.normalize(config.prefix +
+          var baseRestRoute = path.normalize(config.prefix +
             config.restPrefix + '/' + controllerId);
 
           if (config.pluralize) {
@@ -62,8 +80,8 @@ module.exports = function swagger(sails) {
 
           // Bind "actions" and "index" shadow routes for each action
           _.each(actions, function eachActionID(actionId) {
-            if(config.actions) {
-              if(!self.routes.actions) {
+            if (config.actions) {
+              if (!self.routes.actions) {
                 self.routes.actions = [];
               }
 
@@ -73,12 +91,9 @@ module.exports = function swagger(sails) {
               self.routes.actions.push(actionRoute);
             }
           });
-        }
-      );
+        });
 
       console.log(this.routes);
-      // todo attach the routes to a variable for later referencing
-      cb();
-    }, routes: {}
+    }
   }
 };
