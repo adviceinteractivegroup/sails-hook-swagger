@@ -1,5 +1,7 @@
 'use strict';
 
+console.log('here');
+
 module.exports = function swagger(sails) {
   defaults: {
     swagger: {
