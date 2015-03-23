@@ -1,23 +1,27 @@
 'use strict';
 
-console.log('here');
-
 module.exports = function swagger(sails) {
   defaults: {
-    swagger: {
-      enabled: true,
-      actions: true,
-      rest: true,
-      shortcuts: true
+    __configKey__: {
+      enabled: true, actions
+    :
+      true, rest
+    :
+      true, shortcuts
+    :
+      true
     }
   },
   initialize: function initialize(cb) {
-    if(!sails.config[this.configKey].active) {
+    if (!sails.config[this.configKey].enabled) {
       sails.log.verbose('Swagger hook deactivated.');
       return cb();
+    } else {
+      sails.log.verbose('Swagger hook activated.');
     }
 
     console.log('Initialize Here');
+    cb();
   },
   routes: {
 

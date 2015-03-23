@@ -24,5 +24,8 @@
   "bugs": {
     "url": "https://github.com/adviceinteractivegroup/sails-hook-swagger/issues"
   },
-  "homepage": "https://github.com/adviceinteractivegroup/sails-hook-swagger"
+  "homepage": "https://github.com/adviceinteractivegroup/sails-hook-swagger",
+  "sails": {
+    "isHook": true
+  }
 }
