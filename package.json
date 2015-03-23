@@ -1,0 +1,28 @@
+{
+  "name": "sails-hook-swagger",
+  "version": "0.1.0",
+  "description": "Sails Hook to generate swagger api documentation",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adviceinteractivegroup/sails-hook-swagger.git"
+  },
+  "keywords": [
+    "sails",
+    "hook",
+    "sails-hook",
+    "swagger",
+    "sails.js",
+    "api",
+    "documentation"
+  ],
+  "author": "Joshwa Fugett <jfugett27@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/adviceinteractivegroup/sails-hook-swagger/issues"
+  },
+  "homepage": "https://github.com/adviceinteractivegroup/sails-hook-swagger"
+}
