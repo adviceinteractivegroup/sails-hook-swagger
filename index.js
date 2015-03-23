@@ -32,7 +32,7 @@ module.exports = function swagger(sails) {
       if (sails.hooks.controllers) {
         eventsToWaitFor.push('hook:controllers:loaded');
       }
-      sails.after(eventsToWaitFor, hook.getRoutes);*
+      sails.after(eventsToWaitFor, this.getRoutes);
 
       cb();
     },
@@ -80,6 +80,10 @@ module.exports = function swagger(sails) {
 
           // Bind "actions" and "index" shadow routes for each action
           _.each(actions, function eachActionID(actionId) {
+            if(typeof sails.controllers[controllerId] !== 'function') {
+              return;
+            }
+
             if (config.actions) {
               if (!self.routes.actions) {
                 self.routes.actions = [];
