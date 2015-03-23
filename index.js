@@ -80,7 +80,7 @@ module.exports = function swagger(sails) {
 
           // Bind "actions" and "index" shadow routes for each action
           _.each(actions, function eachActionID(actionId) {
-            if(typeof sails.controllers[controllerId] !== 'function') {
+            if(typeof sails.controllers[controllerId].actionId !== 'function') {
               return;
             }
 
