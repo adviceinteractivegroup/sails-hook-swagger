@@ -97,17 +97,40 @@ module.exports = function swagger(sails) {
             }
           });
 
-          // Add shortcuts show routes if enabled
-          if (config.shortcuts) {
-            if(!self.routes.shortcuts) {
-              self.routes.shortcuts = [];
-            }
+          if (sails.hooks.orm && sails.models && sails.models[modelId]) {
+            // get the model
+            var modelId = config.model || routeConfig.model ||
+              (modelFromGlobalId && modelFromGlobalId.identity) || controllerId;
 
-            self.routes.shortcuts.push(baseRoute + '/find');
-            self.routes.shortcuts.push(baseRoute + '/find/:id');
-            self.routes.shortcuts.push(baseRoute + '/create');
-            self.routes.shortcuts.push(baseRoute + '/update/:id');
-            self.routes.shortcuts.push(baseRoute + '/destroy/:id');
+            var Model = sails.models[modelId];
+
+            // Add shortcuts show routes if enabled
+            if (config.shortcuts) {
+              if (!self.routes.shortcuts) {
+                self.routes.shortcuts = [];
+              }
+
+              self.routes.shortcuts.push(baseRoute + '/find');
+              self.routes.shortcuts.push(baseRoute + '/find/:id');
+              self.routes.shortcuts.push(baseRoute + '/create');
+              self.routes.shortcuts.push(baseRoute + '/update/:id');
+              self.routes.shortcuts.push(baseRoute + '/destroy/:id');
+
+              // bind the routes based on the model associations
+              // Bind add/remove "shortcuts" for each `collection` associations
+              _(Model.associations).where({type: 'collection'}).forEach(
+                function addAssociationRoutes(association) {
+                  var alias = association.alias;
+                  
+                  var addRoute = baseRoute + '/:parentid/' + alias + '/add/:id';
+                  self.routes.shortcuts.push(addRoute);
+
+                  var removeRoute = baseRoute + '/:parentid/' + alias +
+                    '/remove/:id';
+                  self.routes.shortcuts.push(removeRoute);
+                }
+              );
+            }
           }
         });
 
