@@ -1,11 +1,7 @@
 'use strict';
 
-var lodash = require('lodash')
-var util = require('util');
-var path = require('path');
-var async = require('async');
+var _ = require('lodash');
 var pluralize = require('pluralize');
-var STRINGFILE = require('sails-stringfile');
 
 module.exports = function swagger(sails) {
   return {
@@ -164,9 +160,8 @@ module.exports = function swagger(sails) {
               );
             }
           }
-        });
-
-      console.log(this.routes);
+        }
+      );
     }
   }
 };
