@@ -97,6 +97,13 @@ module.exports = function swagger(sails) {
             }
           });
 
+          // define access to the model
+          var globalId = sails.controllers[controllerId].globalId;
+          var routeConfig = sails.router.explicitRoutes[controllerId] || {};
+          var modelFromGlobalId = sails.util.findWhere(sails.models, {
+            globalId: globalId
+          });
+
           var modelId = config.model || routeConfig.model ||
             (modelFromGlobalId && modelFromGlobalId.identity) || controllerId;
 
@@ -132,6 +139,19 @@ module.exports = function swagger(sails) {
               );
             }
 
+            if (config.rest) {
+              if (!self.routes.rest) {
+                self.routes.rest = [];
+              }
+
+              // add the base rest routes
+              self.routes.rest.push('get ' + baseRestRoute);
+              self.routes.rest.push('get ' + baseRestRoute + '/:id');
+              self.routes.rest.push('post ' + baseRestRoute);
+              self.routes.rest.push('put ' + baseRestRoute + '/:id');
+              self.routes.rest.push('post ' + baseRestRoute + '/:id');
+              self.routes.rest.push('delete ' + baseRestRoute + '/:id');
+            }
           }
         });
 
