@@ -65,8 +65,8 @@ module.exports = function swagger(sails) {
           var baseRoute = config.prefix + '/' + controllerId;
 
           // Determine base route for RESTful service
-          var baseRestRoute = path.normalize(config.prefix + config.restPrefix +
-                                             '/' + controllerId);
+          var baseRestRoute = config.prefix + config.restPrefix +
+            '/' + controllerId;
 
           if (config.pluralize) {
             baseRoute = pluralize(baseRoute);
@@ -151,6 +151,17 @@ module.exports = function swagger(sails) {
               self.routes.rest.push('put ' + baseRestRoute + '/:id');
               self.routes.rest.push('post ' + baseRestRoute + '/:id');
               self.routes.rest.push('delete ' + baseRestRoute + '/:id');
+
+              _(Model.associations).where({type: 'collection'}).forEach(
+                function addAssociationRoutes(association) {
+                  var alias = association.alias;
+
+                  var assocPath = 'get ' + baseRestRoute + '/:parentid' +
+                    alias + '/:id';
+
+                  self.routes.rest.push(assocPath);
+                }
+              );
             }
           }
         });
