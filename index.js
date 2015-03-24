@@ -97,11 +97,11 @@ module.exports = function swagger(sails) {
             }
           });
 
+          var modelId = config.model || routeConfig.model ||
+            (modelFromGlobalId && modelFromGlobalId.identity) || controllerId;
+
           if (sails.hooks.orm && sails.models && sails.models[modelId]) {
             // get the model
-            var modelId = config.model || routeConfig.model ||
-              (modelFromGlobalId && modelFromGlobalId.identity) || controllerId;
-
             var Model = sails.models[modelId];
 
             // Add shortcuts show routes if enabled
@@ -121,7 +121,7 @@ module.exports = function swagger(sails) {
               _(Model.associations).where({type: 'collection'}).forEach(
                 function addAssociationRoutes(association) {
                   var alias = association.alias;
-                  
+
                   var addRoute = baseRoute + '/:parentid/' + alias + '/add/:id';
                   self.routes.shortcuts.push(addRoute);
 
@@ -131,6 +131,7 @@ module.exports = function swagger(sails) {
                 }
               );
             }
+
           }
         });
 
