@@ -36,9 +36,7 @@ module.exports = function swagger(sails) {
 
       cb();
     },
-    routes: {
-
-    },
+    routes: {},
     getRoutes: function getRoutes() {
       // let blueprintConfig = sails.config.blueprints;
 
@@ -67,8 +65,8 @@ module.exports = function swagger(sails) {
           var baseRoute = config.prefix + '/' + controllerId;
 
           // Determine base route for RESTful service
-          var baseRestRoute = path.normalize(config.prefix +
-            config.restPrefix + '/' + controllerId);
+          var baseRestRoute = path.normalize(config.prefix + config.restPrefix +
+                                             '/' + controllerId);
 
           if (config.pluralize) {
             baseRoute = pluralize(baseRoute);
@@ -78,9 +76,13 @@ module.exports = function swagger(sails) {
           // Build route options for blueprint
           var routeOpts = config;
 
-          // Bind "actions" and "index" shadow routes for each action
+          // Add "actions" shadow routes for each action
           _.each(actions, function eachActionID(actionId) {
-            if(typeof sails.controllers[controllerId].actionId !== 'function') {
+            if (['identity', 'sails', 'globalId'].indexOf(actionId) !== -1) {
+              return;
+            }
+
+            if (!sails.controllers[controllerId][actionId]['_middlewareType']) {
               return;
             }
 
@@ -89,12 +91,24 @@ module.exports = function swagger(sails) {
                 self.routes.actions = [];
               }
 
-              var actionRoute = baseRoute + '/' + actionId.toLowerCase() +
-                '/:id?';
+              var actionRoute = baseRoute + '/' + actionId.toLowerCase();
 
               self.routes.actions.push(actionRoute);
             }
           });
+
+          // Add shortcuts show routes if enabled
+          if (config.shortcuts) {
+            if(!self.routes.shortcuts) {
+              self.routes.shortcuts = [];
+            }
+
+            self.routes.shortcuts.push(baseRoute + '/find');
+            self.routes.shortcuts.push(baseRoute + '/find/:id');
+            self.routes.shortcuts.push(baseRoute + '/create');
+            self.routes.shortcuts.push(baseRoute + '/update/:id');
+            self.routes.shortcuts.push(baseRoute + '/destroy/:id');
+          }
         });
 
       console.log(this.routes);
