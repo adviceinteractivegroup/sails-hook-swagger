@@ -156,7 +156,7 @@ module.exports = function swagger(sails) {
                 function addAssociationRoutes(association) {
                   var alias = association.alias;
 
-                  var assocPath = 'get ' + baseRestRoute + '/:parentid' +
+                  var assocPath = 'get ' + baseRestRoute + '/:parentid/' +
                     alias + '/:id';
 
                   self.routes.rest.push(assocPath);
