@@ -2,14 +2,15 @@
 
 var _ = require('lodash');
 var pluralize = require('pluralize');
-var prettyFormat = require('pretty-format');
+var fs = require('fs');
 
 module.exports = function swagger(sails) {
   return {
     defaults: {
       __configKey__: {
         enabled: true,
-        title: 'My API'
+        title: 'My API',
+        version: '1.0.0'
       }
     }, initialize: function initialize(cb) {
       if (!sails.config[this.configKey].enabled) {
@@ -174,14 +175,28 @@ module.exports = function swagger(sails) {
       var info = {};
 
       info.title = config.title;
+      info.version = config.version;
 
       if (config.description) {
         info.description = config.description;
       }
 
-      spec.info = info;
+      if (config.termsOfService) {
+        info.termsOfServer = config.termsOfService;
+      }
 
-      fs.writeFileSync('public/spec.json', prettyFormat(spec));
+      if (config.contact) {
+        info.contact = config.contact;
+      }
+
+      if (config.license) {
+        info.license = config.license;
+      }
+
+      spec.info = info;
+      var output = JSON.stringify(spec, null, 2);
+
+      fs.writeFileSync('public/spec.json', output);
     }
   }
 };
