@@ -110,51 +110,6 @@ module.exports = function swagger(sails) {
             // get the model
             var Model = sails.models[modelId];
 
-            // Add shortcuts show routes if enabled
-            if (config.shortcuts) {
-              self.routes.push({
-                path: baseRoute + '/find',
-                action: 'get'
-              });
-              self.routes.push({
-                path: baseRoute + '/find/:id',
-                action: 'get'
-              });
-              self.routes.push({
-                path: baseRoute + '/create',
-                action: 'get'
-              });
-              self.routes.push({
-                path: baseRoute + '/update/:id',
-                action: 'get'
-              });
-              self.routes.push({
-                path: baseRoute + '/destroy/:id',
-                action: 'get'
-              });
-
-              // bind the routes based on the model associations
-              // Bind add/remove "shortcuts" for each `collection` associations
-              _(Model.associations).where({type: 'collection'}).forEach(
-                function addAssociationRoutes(association) {
-                  var alias = association.alias;
-
-                  var addRoute = baseRoute + '/:parentid/' + alias + '/add/:id';
-                  self.routes.push({
-                    path: addRoute,
-                    action: 'get'
-                  });
-
-                  var removeRoute = baseRoute + '/:parentid/' + alias +
-                    '/remove/:id';
-                  self.routes.push({
-                    path: removeRoute,
-                    action: 'get'
-                  });
-                }
-              );
-            }
-
             if (config.rest) {
               // add the base rest routes
               self.routes.push({
@@ -187,11 +142,26 @@ module.exports = function swagger(sails) {
                   var alias = association.alias;
 
                   var assocPath = baseRestRoute + '/:parentid/' +
-                    alias + '/:id';
+                    alias;
 
                   self.routes.push({
                     path: assocPath,
                     action: 'get'
+                  });
+
+                  self.routes.push({
+                    path: assocPath + '/:id',
+                    action: 'post'
+                  });
+
+                  self.routes.push({
+                    path: assocPath,
+                    action: 'post'
+                  });
+
+                  self.routes.push({
+                    path: assocPath + '/:id',
+                    action: 'delete'
                   });
                 }
               );
@@ -238,6 +208,11 @@ module.exports = function swagger(sails) {
       spec.consumes = config.consumes;
       spec.produces = config.produces;
 
+//      spec.paths = calculateSwaggerPaths();
+//      spec.definitions = calculateSwaggerDefinitions();
+      spec.parameters = calculateSwaggerParameters();
+//      spec.responses = calculateSwaggerResponses();
+
       if (config.tags) {
         spec.tags = config.tags;
       }
@@ -268,4 +243,51 @@ function setManualRoutes(target, source) {
       action: action
     });
   });
-};
+}
+
+function calculateSwaggerPaths() {
+
+}
+
+function calculateSwaggerDefinitions() {
+
+}
+
+function calculateSwaggerParameters() {
+  return {
+    whereParam: {
+      name: 'where',
+      description: 'JSON encode WHERE criteria objects. Example: where={"name":{"contains":"theodore"}}',
+      in: 'query',
+      required: false
+    },
+    limitParam: {
+      name: 'limit',
+      description: 'The maximum number of records to send back. Example: limit=100',
+      in: 'query',
+      required: false
+    },
+    skipParam: {
+      name: 'skip',
+      description: 'The number of records to skip. Example: skip=30',
+      in: 'query',
+      required: false
+    },
+    sortParam: {
+      name: 'sort',
+      description: 'The sort order. Example: sort=lastName%20ASC',
+      in: 'query',
+      required: false
+    },
+    callbackParam: {
+      name: 'callback',
+      description: 'If specified, a JSONP response will be sent (instead of JSON). This is the name of a client-side javascript function to call, to which results will be passed as the first (and only) argument. Example: ?callback=my_JSONP_data_receiver_fn',
+      in: 'query',
+      required: false
+    }
+  }
+}
+
+function calculateSwaggerResponses() {
+
+}
