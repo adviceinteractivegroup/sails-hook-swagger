@@ -13,11 +13,12 @@ module.exports = function swagger(sails) {
         version: '1.0.0',
         host: 'localhost',
         basePath: '/',
-        schemes: ['http', 'ws'],
+        schemes: ['http'],
         consumes: ['application/json'],
         produces: ['application/json']
       }
-    }, initialize: function initialize(cb) {
+    },
+    initialize: function initialize(cb) {
       if (!sails.config[this.configKey].enabled) {
         sails.log.verbose('Swagger hook deactivated.');
         return cb();
@@ -147,7 +148,7 @@ module.exports = function swagger(sails) {
                   var removeRoute = baseRoute + '/:parentid/' + alias +
                     '/remove/:id';
                   self.routes.push({
-                    path: removePath,
+                    path: removeRoute,
                     action: 'get'
                   });
                 }
@@ -155,10 +156,6 @@ module.exports = function swagger(sails) {
             }
 
             if (config.rest) {
-              if (!self.routes.rest) {
-                self.routes.rest = [];
-              }
-
               // add the base rest routes
               self.routes.push({
                 path: baseRestRoute,
@@ -245,6 +242,14 @@ module.exports = function swagger(sails) {
         spec.tags = config.tags;
       }
 
+      if (config.securityDefinitions) {
+        spec.securityDefinitions = config.securityDefinitions;
+      }
+
+      if (config.security) {
+        spec.security = config.security;
+      }
+
       if (config.docs) {
         spec.externalDocs = config.docs;
       }
@@ -256,7 +261,7 @@ module.exports = function swagger(sails) {
   }
 };
 
-function addRoutes(target, source) {
+function setManualRoutes(target, source) {
   _.each(source, function handleRoute(route, action) {
     target.push({
       path: route,
