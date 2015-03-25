@@ -2,12 +2,14 @@
 
 var _ = require('lodash');
 var pluralize = require('pluralize');
+var prettyFormat = require('pretty-format');
 
 module.exports = function swagger(sails) {
   return {
     defaults: {
       __configKey__: {
-        enabled: true
+        enabled: true,
+        title: 'My API'
       }
     }, initialize: function initialize(cb) {
       if (!sails.config[this.configKey].enabled) {
@@ -32,10 +34,7 @@ module.exports = function swagger(sails) {
 
       cb();
     },
-    routes: {},
     getRoutes: function getRoutes() {
-      // let blueprintConfig = sails.config.blueprints;
-
       // get the manual routes first
       var self = this;
 
@@ -162,6 +161,27 @@ module.exports = function swagger(sails) {
           }
         }
       );
+
+      self.writeSpec();
+    }, writeSpec: function writeSpec() {
+      var config = sails.config[this.configKey];
+
+      var spec = {};
+      // set the swagger version
+      spec.swagger = '2.0';
+
+      // setup the api info
+      var info = {};
+
+      info.title = config.title;
+
+      if (config.description) {
+        info.description = config.description;
+      }
+
+      spec.info = info;
+
+      fs.writeFileSync('public/spec.json', prettyFormat(spec));
     }
   }
 };
