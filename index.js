@@ -44,8 +44,8 @@ module.exports = function swagger(sails) {
       // get the manual routes first
       var self = this;
 
-      this.routes = {};
-      this.routes.manual = sails.config.routes;
+      this.routes = [];
+      setManualRoutes(this.routes, sails.config.routes);
 
       // foreach controller build the shadow routes
       _.each(sails.middleware.controllers,
@@ -88,13 +88,10 @@ module.exports = function swagger(sails) {
             }
 
             if (config.actions) {
-              if (!self.routes.actions) {
-                self.routes.actions = [];
-              }
-
               var actionRoute = baseRoute + '/' + actionId.toLowerCase();
 
-              self.routes.actions.push(actionRoute);
+              var action = controllerId + '.' + actionId.toLowerCase();
+              self.routes.push({path: actionRoute, action: action});
             }
           });
 
@@ -114,15 +111,26 @@ module.exports = function swagger(sails) {
 
             // Add shortcuts show routes if enabled
             if (config.shortcuts) {
-              if (!self.routes.shortcuts) {
-                self.routes.shortcuts = [];
-              }
-
-              self.routes.shortcuts.push(baseRoute + '/find');
-              self.routes.shortcuts.push(baseRoute + '/find/:id');
-              self.routes.shortcuts.push(baseRoute + '/create');
-              self.routes.shortcuts.push(baseRoute + '/update/:id');
-              self.routes.shortcuts.push(baseRoute + '/destroy/:id');
+              self.routes.push({
+                path: baseRoute + '/find',
+                action: 'get'
+              });
+              self.routes.push({
+                path: baseRoute + '/find/:id',
+                action: 'get'
+              });
+              self.routes.push({
+                path: baseRoute + '/create',
+                action: 'get'
+              });
+              self.routes.push({
+                path: baseRoute + '/update/:id',
+                action: 'get'
+              });
+              self.routes.push({
+                path: baseRoute + '/destroy/:id',
+                action: 'get'
+              });
 
               // bind the routes based on the model associations
               // Bind add/remove "shortcuts" for each `collection` associations
@@ -131,11 +139,17 @@ module.exports = function swagger(sails) {
                   var alias = association.alias;
 
                   var addRoute = baseRoute + '/:parentid/' + alias + '/add/:id';
-                  self.routes.shortcuts.push(addRoute);
+                  self.routes.push({
+                    path: addRoute,
+                    action: 'get'
+                  });
 
                   var removeRoute = baseRoute + '/:parentid/' + alias +
                     '/remove/:id';
-                  self.routes.shortcuts.push(removeRoute);
+                  self.routes.push({
+                    path: removePath,
+                    action: 'get'
+                  });
                 }
               );
             }
@@ -146,21 +160,42 @@ module.exports = function swagger(sails) {
               }
 
               // add the base rest routes
-              self.routes.rest.push('get ' + baseRestRoute);
-              self.routes.rest.push('get ' + baseRestRoute + '/:id');
-              self.routes.rest.push('post ' + baseRestRoute);
-              self.routes.rest.push('put ' + baseRestRoute + '/:id');
-              self.routes.rest.push('post ' + baseRestRoute + '/:id');
-              self.routes.rest.push('delete ' + baseRestRoute + '/:id');
+              self.routes.push({
+                path: baseRestRoute,
+                action: 'get'
+              });
+              self.routes.push({
+                path: baseRestRoute + '/:id',
+                action: 'get'
+              });
+              self.routes.push({
+                path: baseRestRoute,
+                action: 'post'
+              });
+              self.routes.push({
+                path: baseRestRoute + '/:id',
+                action: 'put'
+              });
+              self.routes.push({
+                path: baseRestRoute + '/:id',
+                action: 'post'
+              });
+              self.routes.push({
+                path: baseRestRoute + '/:id',
+                action: 'delete'
+              });
 
               _(Model.associations).where({type: 'collection'}).forEach(
                 function addAssociationRoutes(association) {
                   var alias = association.alias;
 
-                  var assocPath = 'get ' + baseRestRoute + '/:parentid/' +
+                  var assocPath = baseRestRoute + '/:parentid/' +
                     alias + '/:id';
 
-                  self.routes.rest.push(assocPath);
+                  self.routes.push({
+                    path: assocPath,
+                    action: 'get'
+                  });
                 }
               );
             }
@@ -169,7 +204,8 @@ module.exports = function swagger(sails) {
       );
 
       self.writeSpec();
-    }, writeSpec: function writeSpec() {
+    },
+    writeSpec: function writeSpec() {
       var config = sails.config[this.configKey];
 
       var spec = {};
@@ -205,9 +241,26 @@ module.exports = function swagger(sails) {
       spec.consumes = config.consumes;
       spec.produces = config.produces;
 
+      if (config.tags) {
+        spec.tags = config.tags;
+      }
+
+      if (config.docs) {
+        spec.externalDocs = config.docs;
+      }
+
       var output = JSON.stringify(spec, null, 2);
 
       fs.writeFileSync('public/spec.json', output);
     }
   }
+};
+
+function addRoutes(target, source) {
+  _.each(source, function handleRoute(route, action) {
+    target.push({
+      path: route,
+      action: action
+    });
+  });
 };
