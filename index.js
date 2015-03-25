@@ -259,31 +259,42 @@ function calculateSwaggerParameters() {
       name: 'where',
       description: 'JSON encode WHERE criteria objects. Example: where={"name":{"contains":"theodore"}}',
       in: 'query',
-      required: false
+      required: false,
+      type: 'string',
+      default: {}
     },
     limitParam: {
       name: 'limit',
       description: 'The maximum number of records to send back. Example: limit=100',
       in: 'query',
-      required: false
+      required: false,
+      type: 'integer',
+      format: 'int32',
+      default: 20
     },
     skipParam: {
       name: 'skip',
       description: 'The number of records to skip. Example: skip=30',
       in: 'query',
-      required: false
+      required: false,
+      type: 'integer',
+      format: 'int32',
+      default: 0
     },
     sortParam: {
       name: 'sort',
       description: 'The sort order. Example: sort=lastName%20ASC',
       in: 'query',
-      required: false
+      required: false,
+      type: 'string',
+      default: 'id ASC'
     },
     callbackParam: {
       name: 'callback',
       description: 'If specified, a JSONP response will be sent (instead of JSON). This is the name of a client-side javascript function to call, to which results will be passed as the first (and only) argument. Example: ?callback=my_JSONP_data_receiver_fn',
       in: 'query',
-      required: false
+      required: false,
+      type: 'string'
     }
   }
 }
