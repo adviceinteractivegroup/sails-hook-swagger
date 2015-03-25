@@ -10,7 +10,12 @@ module.exports = function swagger(sails) {
       __configKey__: {
         enabled: true,
         title: 'My API',
-        version: '1.0.0'
+        version: '1.0.0',
+        host: 'localhost',
+        basePath: '/',
+        schemes: ['http', 'ws'],
+        consumes: ['application/json'],
+        produces: ['application/json']
       }
     }, initialize: function initialize(cb) {
       if (!sails.config[this.configKey].enabled) {
@@ -194,6 +199,12 @@ module.exports = function swagger(sails) {
       }
 
       spec.info = info;
+      spec.host = config.host;
+      spec.basePath = config.basePath;
+      spec.schemes = config.schemes;
+      spec.consumes = config.consumes;
+      spec.produces = config.produces;
+
       var output = JSON.stringify(spec, null, 2);
 
       fs.writeFileSync('public/spec.json', output);
