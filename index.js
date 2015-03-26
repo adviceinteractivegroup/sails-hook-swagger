@@ -211,7 +211,7 @@ module.exports = function swagger(sails) {
 //      spec.paths = calculateSwaggerPaths();
 //      spec.definitions = calculateSwaggerDefinitions();
       spec.parameters = calculateSwaggerParameters();
-//      spec.responses = calculateSwaggerResponses();
+      spec.responses = calculateSwaggerResponses();
 
       if (config.tags) {
         spec.tags = config.tags;
@@ -250,7 +250,25 @@ function calculateSwaggerPaths() {
 }
 
 function calculateSwaggerDefinitions() {
+  var definitions = {};
 
+  definition.Error = {
+    type: 'object',
+    properties: {
+      status: {
+        type: 'string'
+      },
+      error: {
+        type: 'string'
+      }
+    },
+    example: {
+      status: 400,
+      error: 'Invalid Phone'
+    }
+  };
+
+  return definitions;
 }
 
 function calculateSwaggerParameters() {
@@ -300,5 +318,30 @@ function calculateSwaggerParameters() {
 }
 
 function calculateSwaggerResponses() {
-
+  return {
+    NotFound: {
+      description: 'Entity Not Found',
+      schema: {
+        $ref: '#/definitions/Error'
+      }
+    },
+    ServerError: {
+      description: 'Server Error',
+      schema: {
+        $ref: '#/definitions/Error'
+      }
+    },
+    Forbidden: {
+      description: 'Not Authorized',
+      schema: {
+        $ref: '#/definitions/Error'
+      }
+    },
+    InvalidRequest: {
+      description: 'Invalid Input',
+      schema: {
+        $ref: '#/definitions/Error'
+      }
+    }
+  };
 }
