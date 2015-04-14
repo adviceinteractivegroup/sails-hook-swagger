@@ -15,7 +15,8 @@ module.exports = function swagger(sails) {
         basePath: '/',
         schemes: ['http'],
         consumes: ['application/json'],
-        produces: ['application/json']
+        produces: ['application/json'],
+        outputPath: 'public/spec.json'
       }
     },
     initialize: function initialize(cb) {
@@ -655,7 +656,7 @@ module.exports = function swagger(sails) {
 
       var output = JSON.stringify(spec, null, 2);
 
-      fs.writeFileSync('public/spec.json', output);
+      fs.writeFileSync(sails.config[this.configKey].outputPath, output);
     }
   }
 };
