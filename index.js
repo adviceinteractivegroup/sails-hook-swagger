@@ -724,7 +724,12 @@ function calculateSwaggerPaths(routes, models) {
             pathObj.responses = addDefaultResponses(pathObj.responses);
           }
 
-          paths[route.path][method] = pathObj;
+          var displayName = route.path;
+          if(swagger.display) {
+            displayName = swagger.display;
+          }
+
+          paths[displayName][method] = pathObj;
         });
         break;
       case 'rest':
