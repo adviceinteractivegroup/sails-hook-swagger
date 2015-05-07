@@ -1,6 +1,6 @@
 {
   "name": "sails-hook-swagger",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Sails Hook to generate swagger api documentation",
   "main": "index.js",
   "scripts": {
