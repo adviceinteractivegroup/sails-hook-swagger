@@ -798,6 +798,7 @@ function calculateSwaggerDefinitions(models) {
             attrProps.type = 'string';
             attrProps.format = 'text';
             break;
+	  case 'int':
           case 'integer':
             attrProps.type = 'integer';
             attrProps.format = 'int64';
